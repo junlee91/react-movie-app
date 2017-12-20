@@ -6,14 +6,36 @@ class App extends Component {
 
   state = {}
 
- 
+
+  _buttonClick = (e) => {
+    console.log('clicked! ' + e.target.id);
+  
+    const option = e.target.id;
+
+   
+    switch(option)
+    {
+      case 'opt1': 
+        this._getMovies('download_count')
+        break;
+      case 'opt2': 
+        this._getMovies('like_count')
+        break;
+      case 'opt3': 
+        this._getMovies('rating_count')
+        break;
+      default:
+        break;
+    }
+
+  }
+  
   componentDidMount(){
-    this._getMovies();
+    //this._getMovies();
   }
 
-  
-  _getMovies = async () => {
-    const movies = await this._callApi()  // wating callApi to be finished
+  _getMovies = async (val) => {
+    const movies = await this._callApi(val)  // wating callApi to be finished
     this.setState({ // this happens after await finishes 
       movies
     })
@@ -21,8 +43,8 @@ class App extends Component {
   
   // normal fetch is synchronous
   // Promise is asynchornous : making schedule 
-  _callApi = () =>{
-    return fetch('https://yts.am/api/v2/list_movies.json?sort_by=download_count')
+  _callApi = (val) =>{
+    return fetch('https://yts.am/api/v2/list_movies.json?sort_by='+val)
     .then(response => response.json())  // only one attribute
     .then(json => json.data.movies)     // don't need return statement  '=>' automatically returns
     .catch(err => console.log(err))
@@ -45,12 +67,20 @@ class App extends Component {
   render() {
     const {movies} = this.state;
     return (
-      <div className={movies ? "App" : "App--loading"}>
-        {movies ? this._renderMovies() : "Loading.."}
+      <div>
+        <div className="ButtonLayout">
+          <button className="Button" id='opt1' onClick={(e) => this._buttonClick(e)}>Downloads</button>
+          <button className="Button" id='opt2' onClick={(e) => this._buttonClick(e)}>Likes</button>
+          <button className="Button" id='opt3' onClick={(e) => this._buttonClick(e)}>Rating</button>
+        </div>
+        <div className={movies ? "App" : "App--loading"}>
+          {movies ? this._renderMovies() : "Please select sorting options.."}
+        </div>
       </div>
     );
   }
 }
+
 
 export default App;
 
